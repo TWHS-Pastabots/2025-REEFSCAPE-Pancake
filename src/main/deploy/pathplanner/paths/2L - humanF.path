@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.933913934426228,
+        "y": 3.8511782786885242
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.9169057377049175,
+        "y": 6.512448770491803
+      },
+      "isLocked": false,
+      "linkedName": "2LScore"
+    },
+    {
+      "anchor": {
+        "x": 1.1268442622950818,
+        "y": 7.639293032786885
+      },
+      "prevControl": {
+        "x": 2.097848360655738,
+        "y": 6.6563012295081965
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "sigmahumanR"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 4.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 38.0
+  },
+  "reversed": false,
+  "folder": "CyclePaths RF",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

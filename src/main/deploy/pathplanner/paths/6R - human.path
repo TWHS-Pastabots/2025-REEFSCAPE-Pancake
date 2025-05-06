@@ -1,0 +1,68 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 3.560348360655738,
+        "y": 5.061936475409836
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.2383818673475857,
+        "y": 7.512814016424605
+      },
+      "isLocked": false,
+      "linkedName": "6RScore"
+    },
+    {
+      "anchor": {
+        "x": 1.1268442622950818,
+        "y": 7.639293032786885
+      },
+      "prevControl": {
+        "x": 3.34091198647406,
+        "y": 5.307403513861468
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "sigmahumanR"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.6338832487309625,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.5,
+        "maxAcceleration": 4.5,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 4.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 38.0
+  },
+  "reversed": false,
+  "folder": "CyclePaths RC",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 29.999999999999996
+  },
+  "useDefaultConstraints": true
+}

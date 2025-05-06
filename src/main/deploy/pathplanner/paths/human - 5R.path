@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.0069672131147542,
+        "y": 0.7583504098360652
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.0626134251956831,
+        "y": 1.0020787403211449
+      },
+      "isLocked": false,
+      "linkedName": "sigmahumanL"
+    },
+    {
+      "anchor": {
+        "x": 3.0568647540983607,
+        "y": 3.8511782786885242
+      },
+      "prevControl": {
+        "x": 2.764998041641593,
+        "y": 3.2897511003791067
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "5RScore"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.5,
+    "maxAcceleration": 4.5,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -90.0
+  },
+  "reversed": false,
+  "folder": "CyclePaths LC",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -35.0
+  },
+  "useDefaultConstraints": true
+}
