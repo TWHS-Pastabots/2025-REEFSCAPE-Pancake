@@ -51,7 +51,6 @@ public class Robot extends LoggedRobot {
   public double clawZeroPower;
   private DriveSubsystem drivebase;
  
-  private CameraSystem camSystem;
  
   private AutoAllignR autoAllignR;
   private AutoAllignL autoAllignL;
@@ -89,13 +88,7 @@ public class Robot extends LoggedRobot {
     drivebase = DriveSubsystem.getInstance();
     // litty = LED.getInstance();
    
-    camSystem = CameraSystem.getInstance(); 
-    camSystem.AddCamera(new PhotonCamera("ClimbCam"), new Transform3d(
-      new Translation3d(-0.30043, -0.26457, 0.31945), new Rotation3d(0.0, 0.0, Math.toRadians(-55.56095))), 
-      true);
-    camSystem.AddCamera(new PhotonCamera("SwerveCam"), new Transform3d(
-      new Translation3d(0.28831, -0.2421, 0.29561), new Rotation3d(0.0, Math.toRadians(2.5), Math.toRadians(-105))), 
-      true);
+    
       // camSystem.AddCamera(new PhotonCamera("MiddleCam"), new Transform3d(
       //   new Translation3d(0.00833, -0.22138, 0.14534), new Rotation3d(0.0, 0.0, Math.toRadians(-90))), 
       //   true);
@@ -158,38 +151,13 @@ public class Robot extends LoggedRobot {
 
     
 
-    SmartDashboard.putNumber("Last Tag Seen", camSystem.lastTag);
     SmartDashboard.putNumber("Desired Degree", 
     CameraSystem.aprilTagFieldLayout.getTagPose(18).get().getRotation().toRotation2d().getDegrees());
     SmartDashboard.putNumber("Currenr Degree", DriveSubsystem.poseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
-    if(camSystem.getTargetRange(1, camSystem.lastTag) != null && camSystem.getYawForTag(1, camSystem.lastTag)!= null)
-    {
-      SmartDashboard.putNumber("SwerveCam dist", camSystem.getTargetRange(1, camSystem.lastTag));
-      SmartDashboard.putNumber("SwerveCam yaw", camSystem.getYawForTag(1, camSystem.lastTag));
-      SmartDashboard.putNumber("SwerveCam Pitch", camSystem.getPitch(1, camSystem.lastTag));
-    }
-    if(camSystem.getTargetRange(0, camSystem.lastTag) != null && camSystem.getYawForTag(0, camSystem.lastTag)!= null)
-    {
-      SmartDashboard.putNumber("ClimbCam dist", camSystem.getTargetRange(0, camSystem.lastTag));
-      SmartDashboard.putNumber("ClimbCam yaw", camSystem.getYawForTag(0, camSystem.lastTag));
-      SmartDashboard.putNumber("CLimbCam Pitch", camSystem.getPitch(0, camSystem.lastTag));
-    }
-    SmartDashboard.putNumber("heading", drivebase.getWorkingHeading());
-    if(camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag) != null
-    && camSystem.getYawForTag(camSystem.focusCamIndex, camSystem.lastTag) != null)
-    {
-      SmartDashboard.putNumber("xController", xController.calculate(
-        camSystem.getYawForTag(camSystem.focusCamIndex, camSystem.lastTag).doubleValue()));
-      SmartDashboard.putNumber("yController", yController.calculate(
-        camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag).doubleValue()));
-      SmartDashboard.putNumber("thetaController", thetaController.calculate(drivebase.getWorkingHeading()));
-    }
-    
-    SmartDashboard.putString("Focus Cam", (camSystem.focusCamIndex == 0)  
-    ? "climb" : "swerve");
   
     
+  
    
    
 
@@ -239,7 +207,6 @@ public class Robot extends LoggedRobot {
     // SmartDashboard.putNumber("Odometry X", pose.getX());
     // SmartDashboard.putNumber("Odometry Y", pose.getY());
     drivebase.periodic();
-    camSystem.updateLatestResult(false);
   }
 
   @Override
@@ -274,101 +241,16 @@ public class Robot extends LoggedRobot {
     }else{
       speedMod = 1;
     }
-    camSystem.updateLatestResult(driver.getBButton() || driver.getXButton());
+    
    
     if (driver.getPOV() == 0) {
       drivebase.zeroHeading();
     }
+
+    drivebase.drive(xSpeed, ySpeed, rot, true);
     
 
-    if(driver.getBButton()){
-      usingAlign = true;
-      camSystem.poleSide = PoleSide.RIGHT;
-      thetaController.setSetpoint(0);
-      //was .11
-      yController.setSetpoint(0.06);
-      xController.setSetpoint(-1.9);
-      camSystem.focusCamIndex = 1;
-      if (camSystem.hasDesiredTarget(0, camSystem.lastTag) && camSystem.hasDesiredTarget(1, camSystem.lastTag)) 
-      // driver align right so left camera
-      {
-        updateThetaControllerSetpoint(camSystem.lastTag);
-        // if(yController.calculate(camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag).doubleValue()) < .55
-        // && camSystem.focusCamIndex == 0){
-        //   xController.setSetpoint(-4.5);
-        // }
-
-        if(camSystem.focusCamIndex == 0 && camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag) != null
-        && yController.calculate(camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag).doubleValue()) < .20)
-        { 
-          multFactor = 1;
-          xController.setSetpoint(-7.1);
-          xSpeed = xController.calculate(camSystem.getYawForTag(camSystem.focusCamIndex, camSystem.lastTag));
-          ySpeed = yController.calculate(camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag).doubleValue());
-        }
-        else{
-          xSpeed = xController.calculate(camSystem.getYawForTag(1, camSystem.lastTag));
-          ySpeed = yController.calculate(camSystem.getTargetRange(1, camSystem.lastTag).doubleValue());
-          multFactor = 2.4;
-        }
-        multFactor = .7;
-        rot = thetaController.calculate(drivebase.getWorkingHeading());
-        // drivebase.drive(xSpeed1,
-        //   multFactor * ySpeed1, 
-        //   thetaController.calculate(drivebase.getWorkingHeading()),
-        //   //0, 
-        //   false);
-      }
-
-      else if((camSystem.hasDesiredTarget(camSystem.focusCamIndex, camSystem.lastTag))
-      || (camSystem.focusCamIndex == 0 && camSystem.hasDesiredTarget(1, camSystem.lastTag))){
-        updateThetaControllerSetpoint(camSystem.lastTag);
-
-        if(camSystem.focusCamIndex == 0 && camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag) != null
-        && yController.calculate(camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag).doubleValue()) < .20)
-        { 
-          multFactor = 1;
-          xController.setSetpoint(-7.1);
-          xSpeed = xController.calculate(camSystem.getYawForTag(camSystem.focusCamIndex, camSystem.lastTag));
-          ySpeed = yController.calculate(camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag).doubleValue());
-        }
-        else{
-          xSpeed = xController.calculate(camSystem.getYawForTag(1, camSystem.lastTag));
-          ySpeed = yController.calculate(camSystem.getTargetRange(1, camSystem.lastTag).doubleValue());
-          multFactor = 2.4;
-        }
-        multFactor = .7;
-        rot = thetaController.calculate(drivebase.getWorkingHeading());
-        // drivebase.drive(xSpeed1,
-        //   multFactor * ySpeed1, 
-        //   thetaController.calculate(drivebase.getWorkingHeading()),
-        //   //0, 
-        //   false);
-        }
-    }
     
-    
-    if(driver.getXButton()){
-      usingAlign = true;
-      camSystem.poleSide = PoleSide.LEFT;
-      //thetaController.setSetpoint(0);
-      //was .11
-      //yController.setSetpoint(0.07);
-      xController.setSetpoint(-18.8);
-      camSystem.focusCamIndex = 0;
-      if(camSystem.focusCamIndex == 0 && camSystem.getYawForTag(camSystem.focusCamIndex, camSystem.lastTag) == null){
-        xSpeed = .1;
-        ySpeed = 0;
-        rot = 0;
-      }
-      else if(camSystem.focusCamIndex == 0 && camSystem.getYawForTag(camSystem.focusCamIndex, camSystem.lastTag) != null){
-        xSpeed =  xController.calculate(camSystem.getYawForTag(camSystem.focusCamIndex, camSystem.lastTag));
-        ySpeed = 0;
-        rot = 0;
-      }
-    
-    drivebase.drive(xSpeed, multFactor * ySpeed, rot, !usingAlign);
-    }
 }
   
   @Override
@@ -394,27 +276,5 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationPeriodic() {
   }
-  private void updateThetaControllerSetpoint(int targetID) {
-    switch (targetID) {
-      case 6, 19 -> thetaController.setSetpoint(30);
-      case 7, 18 -> thetaController.setSetpoint(90);
-      case 8, 17 -> thetaController.setSetpoint(150);
-      case 9, 22 -> thetaController.setSetpoint(210);
-      case 10, 21 -> thetaController.setSetpoint(270);
-      case 11, 20 -> thetaController.setSetpoint(330);
-    }
-
-    PPHolonomicDriveController.clearXFeedbackOverride();
-    PPHolonomicDriveController.clearYFeedbackOverride();
-    PPHolonomicDriveController.clearRotationFeedbackOverride();
-  }
-  private void updateXControllerSetpoint(){
-    if(camSystem.focusCamIndex == 0 && camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag) != null){
-      xController.setSetpoint(-5.8 + (-15 * .13)/ camSystem.getTargetRange(camSystem.focusCamIndex, camSystem.lastTag));
-    }
-    else{
-      xController.setSetpoint(-20.8);
-    }
-    
-  }
+  
 }
